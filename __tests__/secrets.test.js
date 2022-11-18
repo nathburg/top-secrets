@@ -16,7 +16,7 @@ describe('secrets routes', () => {
     expect(res.body.description).toBe('The President is a teapot.');
   });
 
-  test('GET /api/v1/secrets returns all secrets', async () => {
+  test.skip('GET /api/v1/secrets returns all secrets', async () => {
     const res = await request(app).get('/api/v1/secrets');
     expect(res.status).toBe(200);
     expect(res.body[0].description).toBe(

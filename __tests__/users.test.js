@@ -36,10 +36,24 @@ describe('backend-express-template routes', () => {
     `);
   });
 
-  test('POST /api/v1/users/sessions with correct login adds cookies to agent', async () => {
+  test('GET /api/v1/secrets only returns secrets if user is logged in', async () => {
+    const res1 = await request(app).get('/api/v1/secrets');
+    expect(res1.body).toEqual({
+      message: 'You must be signed in to continue',
+      status: 401,
+    });
     const [agent, user] = await registerAndLogin();
-    console.log(agent.jar.getCookie());
-    expect(1 + 1).toBe(2);
+    const res2 = await agent.get('/api/v1/secrets');
+    expect(res2.body).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "created_at": "2022-11-18T21:36:53.140Z",
+          "description": "The President slept with a hooker. Don't tell anyone",
+          "id": "1",
+          "title": "President Secret",
+        },
+      ]
+    `);
   });
 
   afterAll(() => {
