@@ -12,7 +12,6 @@ describe('secrets routes', () => {
     const res = await request(app)
       .post('/api/v1/secrets')
       .send({ title: '418', description: 'The President is a teapot.' });
-    console.log(res.body);
     expect(res.status).toEqual(200);
     expect(res.body.description).toBe('The President is a teapot.');
   });
