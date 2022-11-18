@@ -17,7 +17,7 @@ const registerAndLogin = async (userProps = {}) => {
   const user = await UserService.create({ ...mockUser, ...userProps });
   const { email } = user;
   await agent.post('/api/v1/users/sessions').send({ email, password });
-  return [agent, user];
+  return agent;
 };
 
 describe('backend-express-template routes', () => {
@@ -40,7 +40,7 @@ describe('backend-express-template routes', () => {
     expect(res2.body).toMatchInlineSnapshot(`
       Object {
         "email": "nathan@defense.gov",
-        "id": "2",
+        "id": "1",
       }
     `);
   });
@@ -53,7 +53,7 @@ describe('backend-express-template routes', () => {
       message: 'You must be signed in to continue',
       status: 401,
     });
-    const [agent, user] = await registerAndLogin();
+    const agent = await registerAndLogin();
     const res2 = await agent
       .post('/api/v1/secrets')
       .send({ title: '418', description: 'The President is a teapot.' });
@@ -61,7 +61,7 @@ describe('backend-express-template routes', () => {
   });
 
   test('DELETE /api/v1/users/sessions logs out the user', async () => {
-    const [agent, user] = await registerAndLogin();
+    const agent = await registerAndLogin();
     const res = await agent.delete('/api/v1/users/sessions');
     expect(res.body).toMatchInlineSnapshot(`
       Object {
@@ -77,7 +77,7 @@ describe('backend-express-template routes', () => {
       message: 'You must be signed in to continue',
       status: 401,
     });
-    const [agent, user] = await registerAndLogin();
+    const agent = await registerAndLogin();
     const res2 = await agent.get('/api/v1/secrets');
     expect(res2.body[0].description).toBe(
       // eslint-disable-next-line quotes

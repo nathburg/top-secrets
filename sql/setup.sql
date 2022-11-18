@@ -18,6 +18,3 @@ CREATE TABLE users (
     email TEXT,
     password_hash text
 );
-
-INSERT INTO users (email, password_hash)
-VALUES ('nathans.email.address@gmail.com', 'oehri34904o(&%hbsg');
