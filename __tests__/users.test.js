@@ -36,6 +36,32 @@ describe('backend-express-template routes', () => {
     `);
   });
 
+  test('POST /api/v1/secrets posts new secret if user is logged in', async () => {
+    const res1 = await request(app)
+      .post('/api/v1/secrets')
+      .send({ title: '418', description: 'The President is a teapot.' });
+    expect(res1.body).toEqual({
+      message: 'You must be signed in to continue',
+      status: 401,
+    });
+    const [agent, user] = await registerAndLogin();
+    const res2 = await agent
+      .post('/api/v1/secrets')
+      .send({ title: '418', description: 'The President is a teapot.' });
+    expect(res2.body.description).toBe('The President is a teapot.');
+  });
+
+  test('DELETE /api/v1/users/sessions logs out the user', async () => {
+    const [agent, user] = await registerAndLogin();
+    const res = await agent.delete('/api/v1/users/sessions');
+    expect(res.body).toMatchInlineSnapshot(`
+      Object {
+        "message": "Signed out successfully!",
+        "success": true,
+      }
+    `);
+  });
+
   test('GET /api/v1/secrets only returns secrets if user is logged in', async () => {
     const res1 = await request(app).get('/api/v1/secrets');
     expect(res1.body).toEqual({
@@ -44,16 +70,10 @@ describe('backend-express-template routes', () => {
     });
     const [agent, user] = await registerAndLogin();
     const res2 = await agent.get('/api/v1/secrets');
-    expect(res2.body).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "created_at": "2022-11-18T21:36:53.140Z",
-          "description": "The President slept with a hooker. Don't tell anyone",
-          "id": "1",
-          "title": "President Secret",
-        },
-      ]
-    `);
+    expect(res2.body[0].description).toBe(
+      // eslint-disable-next-line quotes
+      "The President slept with a hooker. Don't tell anyone"
+    );
   });
 
   afterAll(() => {
