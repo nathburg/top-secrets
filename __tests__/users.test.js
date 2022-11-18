@@ -24,13 +24,22 @@ describe('backend-express-template routes', () => {
   beforeEach(() => {
     return setup(pool);
   });
-  test('POST /api/v1/users signs up new user', async () => {
-    const res = await request(app)
+  test('POST /api/v1/users signs up new user if email ends in @defense.gov', async () => {
+    const res1 = await request(app)
       .post('/api/v1/users')
       .send({ email: 'nathan@example.com', password: 'helloworld' });
-    expect(res.body).toMatchInlineSnapshot(`
+    expect(res1.body).toMatchInlineSnapshot(`
       Object {
-        "email": "nathan@example.com",
+        "message": "You do not have access to view this page",
+        "status": 403,
+      }
+    `);
+    const res2 = await request(app)
+      .post('/api/v1/users')
+      .send({ email: 'nathan@defense.gov', password: 'helloworld' });
+    expect(res2.body).toMatchInlineSnapshot(`
+      Object {
+        "email": "nathan@defense.gov",
         "id": "2",
       }
     `);
